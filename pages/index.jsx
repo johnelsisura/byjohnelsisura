@@ -40,7 +40,7 @@ export default function Home() {
       const img = ctx.createImageData(width, height);
       for (let i = 0; i < img.data.length; i += 4) {
         const v = Math.random() * 255;
-        img.data[i] = v; img.data[i+1] = v; img.data[i+2] = v; img.data[i+3] = 14;
+        img.data[i] = v; img.data[i+1] = v; img.data[i+2] = v; img.data[i+3] = 18;
       }
       ctx.putImageData(img, 0, 0);
       af = requestAnimationFrame(draw);
@@ -62,7 +62,7 @@ export default function Home() {
         <style>{`
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
           :root {
-            --black: #080807;
+            --black: #161412;
             --red: #E8001C;
             --white: #F0EDE8;
             --grey: #3a3835;
@@ -72,10 +72,74 @@ export default function Home() {
 
           .grain {
             position: fixed; inset: 0; pointer-events: none;
-            z-index: 1; mix-blend-mode: overlay; opacity: 0.5;
+            z-index: 1; mix-blend-mode: soft-light; opacity: 0.65;
+          }
+
+          body::before {
+            content: '';
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 0;
+            background-image:
+              radial-gradient(ellipse 80% 60% at 20% 10%, rgba(232,0,28,0.04) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 80% at 80% 90%, rgba(240,237,232,0.02) 0%, transparent 60%);
           }
 
           nav { z-index: 50 !important; }
+
+          /* ── NAV OVERRIDE ── */
+          nav, header {
+            position: fixed !important;
+            top: 0 !important; left: 0 !important; right: 0 !important;
+            z-index: 50 !important;
+            background: rgba(22,20,18,0.72) !important;
+            backdrop-filter: blur(14px) saturate(160%) !important;
+            -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+            border-bottom: 1px solid rgba(58,56,53,0.6) !important;
+            padding: 0 3rem !important;
+            height: 56px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+          }
+
+          @media(max-width:768px){
+            nav, header { padding: 0 1.5rem !important; }
+          }
+
+          /* brand / logo inside nav */
+          nav a:first-child, header a:first-child {
+            font-family: 'Barlow Condensed', sans-serif !important;
+            font-weight: 900 !important;
+            font-size: 1rem !important;
+            letter-spacing: 0.14em !important;
+            text-transform: uppercase !important;
+            color: var(--white) !important;
+            text-decoration: none !important;
+          }
+
+          /* nav links */
+          nav a:not(:first-child), header a:not(:first-child) {
+            font-family: 'Barlow', sans-serif !important;
+            font-size: 0.68rem !important;
+            letter-spacing: 0.18em !important;
+            text-transform: uppercase !important;
+            color: var(--muted) !important;
+            text-decoration: none !important;
+            transition: color 0.2s !important;
+          }
+          nav a:not(:first-child):hover, header a:not(:first-child):hover {
+            color: var(--white) !important;
+          }
+
+          /* red dot accent */
+          .nav-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--red);
+            margin-left: 0.5rem;
+            vertical-align: middle;
+          }
 
           .hero {
             position: relative;
@@ -291,8 +355,9 @@ export default function Home() {
 
           .reel-frame {
             aspect-ratio: 16/9;
-            background: #0e0c0b;
+            background: #111009;
             border: 1px solid var(--grey);
+            border-radius: 12px;
             position: relative;
             overflow: hidden;
           }
@@ -326,7 +391,7 @@ export default function Home() {
             border-bottom: 1px solid var(--grey);
           }
 
-          .filters { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 1.5rem 0; }
+          .filters { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 1.5rem 0 2rem; }
 
           .filter-btn {
             font-family: 'Barlow Condensed', sans-serif;
@@ -336,6 +401,7 @@ export default function Home() {
             text-transform: uppercase;
             padding: 0.35rem 1rem;
             border: 1px solid var(--grey);
+            border-radius: 4px;
             background: transparent;
             color: var(--muted);
             cursor: pointer;
@@ -347,12 +413,16 @@ export default function Home() {
           .works-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1px;
-            background: var(--grey);
+            gap: 1.25rem;
           }
 
           @media(max-width:640px){ .works-grid { grid-template-columns: 1fr; } }
-          .works-grid > * { background: var(--black); }
+          .works-grid > * {
+            background: var(--black);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--grey);
+          }
 
           .footer {
             padding: 2rem 3rem;
