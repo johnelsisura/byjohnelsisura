@@ -10,10 +10,9 @@ export default function Home() {
   const [discipline, setDiscipline] = useState("Campaign");
   const [fade, setFade] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
-  const [disciplineIndex, setDisciplineIndex] = useState(0);
+  const [idx, setIdx] = useState(0);
   const canvasRef = useRef(null);
 
-  // Rotating discipline
   useEffect(() => {
     let i = 0;
     const timer = setInterval(() => {
@@ -21,401 +20,363 @@ export default function Home() {
       setTimeout(() => {
         i = (i + 1) % DISCIPLINES.length;
         setDiscipline(DISCIPLINES[i]);
-        setDisciplineIndex(i);
+        setIdx(i);
         setFade(true);
-      }, 400);
-    }, 2600);
+      }, 380);
+    }, 2800);
     return () => clearInterval(timer);
   }, []);
 
-  // Grain canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    let animFrame;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
+    let af;
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener("resize", resize);
-
-    const drawGrain = () => {
+    const draw = () => {
       const { width, height } = canvas;
-      const imageData = ctx.createImageData(width, height);
-      const data = imageData.data;
-      for (let i = 0; i < data.length; i += 4) {
-        const val = Math.random() * 255;
-        data[i] = val;
-        data[i + 1] = val;
-        data[i + 2] = val;
-        data[i + 3] = 18;
+      const img = ctx.createImageData(width, height);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = Math.random() * 255;
+        img.data[i] = v; img.data[i+1] = v; img.data[i+2] = v; img.data[i+3] = 14;
       }
-      ctx.putImageData(imageData, 0, 0);
-      animFrame = requestAnimationFrame(drawGrain);
+      ctx.putImageData(img, 0, 0);
+      af = requestAnimationFrame(draw);
     };
-    drawGrain();
-
-    return () => {
-      cancelAnimationFrame(animFrame);
-      window.removeEventListener("resize", resize);
-    };
+    draw();
+    return () => { cancelAnimationFrame(af); window.removeEventListener("resize", resize); };
   }, []);
 
-  const filtered =
-    activeFilter === "all"
-      ? works
-      : works.filter((w) => w.type.includes(activeFilter));
+  const filtered = activeFilter === "all" ? works : works.filter(w => w.type.includes(activeFilter));
 
   return (
     <>
       <Head>
         <title>Weave by John Elsisura</title>
         <meta name="description" content="Portfolio of John Elsisura — campaigns, copies, jingles, case studies, PR, graphics, and accounts." />
-        <meta property="og:title" content="Weave by John Elsisura" />
-        <meta property="og:description" content="Campaigns, copies, jingles, and more. Grounded in human truth." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,700;1,900&family=Barlow:wght@400;500&display=swap" rel="stylesheet" />
         <style>{`
+          *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
           :root {
-            --ink: #0a0907;
-            --accent: #E8001C;
-            --muted: #6b6560;
-            --cream: #ede8df;
+            --black: #080807;
+            --red: #E8001C;
+            --white: #F0EDE8;
+            --grey: #3a3835;
+            --muted: #6e6b66;
           }
-          html { background: var(--ink); }
-          body { background: var(--ink); margin: 0; }
+          html,body { background: var(--black); color: var(--white); }
 
-          .font-bebas { font-family: 'Bebas Neue', sans-serif; }
-          .font-serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
-
-          /* Grain overlay */
-          .grain-canvas {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-            mix-blend-mode: overlay;
-            opacity: 0.6;
+          .grain {
+            position: fixed; inset: 0; pointer-events: none;
+            z-index: 1; mix-blend-mode: overlay; opacity: 0.5;
           }
 
-          /* Hero */
+          nav { z-index: 50 !important; }
+
           .hero {
             position: relative;
             min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            grid-template-rows: 1fr auto;
+            padding: 7rem 3rem 3rem;
+            overflow: hidden;
+          }
+
+          @media(max-width:768px){
+            .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 2.5rem; }
+            .hero-right { display: none; }
+          }
+
+          .hero::before {
+            content: '';
+            position: absolute;
+            left: 3rem;
+            top: 0;
+            width: 3px;
+            height: 45vh;
+            background: var(--red);
+          }
+
+          @media(max-width:768px){ .hero::before { left: 1.5rem; } }
+
+          .hero-left {
+            grid-column: 1;
+            grid-row: 1;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 0 3rem 4rem;
-            overflow: hidden;
-            background: var(--ink);
+            padding-left: 1.5rem;
           }
 
-          .hero-bg-text {
-            position: absolute;
-            top: 50%;
-            left: -2rem;
-            transform: translateY(-50%);
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(18rem, 35vw, 32rem);
-            line-height: 0.85;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(232,0,28,0.06);
-            pointer-events: none;
-            user-select: none;
-            white-space: nowrap;
-            letter-spacing: -0.02em;
+          .hero-eyebrow {
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
           }
 
-          .hero-rule {
-            width: 100%;
+          .hero-eyebrow::before {
+            content: '';
+            display: block;
+            width: 24px;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(232,0,28,0.5) 30%, rgba(232,0,28,0.1) 70%, transparent);
-            margin-bottom: 2.5rem;
+            background: var(--red);
           }
 
-          .discipline-wrap {
+          .hero-type {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            line-height: 0.88;
+            letter-spacing: -0.01em;
+          }
+
+          .hero-type .line-discipline {
+            display: block;
+            font-size: clamp(6rem, 16vw, 15rem);
+            color: var(--red);
+            transition: opacity 0.38s cubic-bezier(.4,0,.2,1), transform 0.38s cubic-bezier(.4,0,.2,1);
+            text-transform: uppercase;
+          }
+
+          .hero-type .line-by {
+            display: block;
+            font-size: clamp(2.5rem, 6vw, 5.5rem);
+            color: var(--muted);
+            font-style: italic;
+            font-weight: 700;
+            text-transform: lowercase;
+            line-height: 1;
+            margin: 0.1em 0;
+          }
+
+          .hero-type .line-name {
+            display: block;
+            font-size: clamp(5rem, 13vw, 12rem);
+            color: var(--white);
+            text-transform: uppercase;
+          }
+
+          .hero-bottom {
+            grid-column: 1 / -1;
+            grid-row: 2;
             display: flex;
             align-items: flex-end;
-            gap: 0;
-            flex-wrap: wrap;
-            line-height: 0.88;
-            margin-bottom: 1.5rem;
-          }
-
-          .discipline-rotating {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(5rem, 14vw, 13rem);
-            color: #E8001C;
-            transition: opacity 0.4s, transform 0.4s;
-            display: block;
-            letter-spacing: -0.01em;
-          }
-
-          .discipline-by {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: clamp(2rem, 5vw, 5rem);
-            color: rgba(237,232,223,0.4);
-            margin: 0 1.2rem 0.5rem;
-            line-height: 1;
-          }
-
-          .discipline-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(5rem, 14vw, 13rem);
-            color: var(--cream);
-            letter-spacing: -0.01em;
-            display: block;
-          }
-
-          .hero-meta {
-            display: flex;
-            align-items: flex-start;
-            gap: 4rem;
+            justify-content: space-between;
+            padding-top: 2.5rem;
+            border-top: 1px solid var(--grey);
             margin-top: 2rem;
+            gap: 2rem;
           }
+
+          @media(max-width:768px){
+            .hero-bottom { flex-direction: column; align-items: flex-start; }
+          }
+
+          .hero-counter {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+            white-space: nowrap;
+          }
+
+          .hero-counter span { color: var(--red); }
 
           .hero-tagline {
-            max-width: 420px;
+            font-family: 'Barlow', sans-serif;
             font-size: 0.8rem;
-            line-height: 1.75;
+            line-height: 1.8;
             color: var(--muted);
-            letter-spacing: 0.02em;
-            border-left: 1px solid rgba(232,0,28,0.35);
-            padding-left: 1.25rem;
+            max-width: 380px;
+            text-align: right;
           }
 
-          .hero-tagline span {
-            color: var(--cream);
-          }
+          @media(max-width:768px){ .hero-tagline { text-align: left; } }
+          .hero-tagline strong { color: var(--white); font-weight: 500; }
 
-          .hero-scroll {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.5rem;
-            margin-left: auto;
-          }
-
-          .hero-scroll a {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 0.75rem;
+          .hero-cta {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
             letter-spacing: 0.25em;
+            text-transform: uppercase;
             color: var(--muted);
             text-decoration: none;
-            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             transition: color 0.2s;
-            writing-mode: vertical-rl;
+            white-space: nowrap;
+          }
+          .hero-cta:hover { color: var(--white); }
+          .hero-cta::after {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: currentColor;
           }
 
-          .hero-scroll a:hover { color: #E8001C; }
-
-          .counter {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 0.65rem;
-            color: rgba(232,0,28,0.5);
-            letter-spacing: 0.15em;
-          }
-
-          /* Stamp mark */
-          .stamp {
-            position: absolute;
-            top: 7rem;
-            right: 3rem;
-            width: 100px;
-            height: 100px;
-            border: 1.5px solid rgba(232,0,28,0.3);
-            border-radius: 50%;
+          .hero-right {
+            grid-column: 2;
+            grid-row: 1;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            transform: rotate(12deg);
+            justify-content: flex-end;
+            padding-bottom: 0.25rem;
+            padding-left: 2rem;
+            border-left: 1px solid var(--grey);
           }
 
-          .stamp p {
-            margin: 0;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 0.55rem;
-            letter-spacing: 0.2em;
-            color: rgba(232,0,28,0.5);
+          .disc-list { list-style: none; display: flex; flex-direction: column; gap: 0.1rem; }
+
+          .disc-list li {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            line-height: 1.6;
+            color: var(--grey);
+            transition: color 0.3s;
+            padding: 0.2rem 0;
+            border-bottom: 1px solid transparent;
           }
 
-          /* Section label */
-          .section-label {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 0.65rem;
-            letter-spacing: 0.25em;
-            color: #E8001C;
-            text-transform: uppercase;
+          .disc-list li.active {
+            color: var(--red);
+            border-bottom-color: rgba(232,0,28,0.2);
           }
 
-          /* Reel section */
-          .reel-section {
+          .reel {
             padding: 5rem 3rem;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            position: relative;
-            z-index: 2;
+            border-top: 1px solid var(--grey);
+            position: relative; z-index: 2;
           }
 
-          .reel-header {
-            display: flex;
-            align-items: baseline;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+          @media(max-width:768px){ .reel { padding: 3.5rem 1.5rem; } }
+
+          .section-label {
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--red);
           }
 
-          .reel-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(3rem, 7vw, 6rem);
-            color: var(--cream);
-            line-height: 1;
-            margin: 0;
+          .section-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: clamp(3rem, 7vw, 7rem);
+            text-transform: uppercase;
+            color: var(--white);
+            line-height: 0.9;
+            letter-spacing: -0.01em;
           }
 
-          .reel-title em {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            color: #E8001C;
-          }
+          .section-title em { font-style: italic; color: var(--red); }
 
           .reel-frame {
-            position: relative;
             aspect-ratio: 16/9;
-            background: #0d0b09;
-            border: 1px solid rgba(255,255,255,0.04);
+            background: #0e0c0b;
+            border: 1px solid var(--grey);
+            position: relative;
             overflow: hidden;
           }
 
           .reel-placeholder {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 1rem;
           }
 
-          .play-btn {
-            width: 64px;
-            height: 64px;
+          .play-ring {
+            width: 68px; height: 68px;
             border: 1px solid rgba(232,0,28,0.5);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             cursor: pointer;
             transition: border-color 0.2s, background 0.2s;
           }
+          .play-ring:hover { border-color: var(--red); background: rgba(232,0,28,0.07); }
 
-          .play-btn:hover {
-            border-color: #E8001C;
-            background: rgba(232,0,28,0.08);
-          }
-
-          /* Works section */
-          .works-section {
+          .works {
             padding: 0 3rem 6rem;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            position: relative;
-            z-index: 2;
+            border-top: 1px solid var(--grey);
+            position: relative; z-index: 2;
           }
 
-          .works-header {
-            padding: 2.5rem 0 0;
-            margin-bottom: 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            padding-bottom: 2rem;
+          @media(max-width:768px){ .works { padding: 0 1.5rem 4rem; } }
+
+          .works-head {
+            padding: 3rem 0 2rem;
+            border-bottom: 1px solid var(--grey);
           }
 
-          .works-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 5rem);
-            color: var(--cream);
-            line-height: 1;
-            margin: 0.25rem 0 0;
-          }
-
-          /* Filters */
-          .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding: 1.5rem 0;
-          }
+          .filters { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 1.5rem 0; }
 
           .filter-btn {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
             padding: 0.35rem 1rem;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid var(--grey);
             background: transparent;
             color: var(--muted);
-            font-size: 0.65rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Bebas Neue', sans-serif;
+            transition: all 0.18s;
           }
+          .filter-btn:hover { border-color: var(--white); color: var(--white); }
+          .filter-btn.active { border-color: var(--red); color: var(--red); }
 
-          .filter-btn:hover {
-            border-color: rgba(255,255,255,0.25);
-            color: rgba(237,232,223,0.7);
-          }
-
-          .filter-btn.active {
-            border-color: #E8001C;
-            color: #E8001C;
-          }
-
-          /* Grid */
           .works-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.25rem;
+            gap: 1px;
+            background: var(--grey);
           }
 
-          @media (max-width: 640px) {
-            .hero { padding: 0 1.5rem 3rem; }
-            .stamp { display: none; }
-            .hero-meta { flex-direction: column; gap: 1.5rem; }
-            .hero-scroll { display: none; }
-            .reel-section, .works-section { padding-left: 1.5rem; padding-right: 1.5rem; }
-            .works-grid { grid-template-columns: 1fr; }
-            .hero-bg-text { font-size: 40vw; }
-          }
+          @media(max-width:640px){ .works-grid { grid-template-columns: 1fr; } }
+          .works-grid > * { background: var(--black); }
 
-          /* Footer */
           .footer {
             padding: 2rem 3rem;
-            border-top: 1px solid rgba(255,255,255,0.04);
+            border-top: 1px solid var(--grey);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-            z-index: 2;
+            position: relative; z-index: 2;
           }
+
+          @media(max-width:768px){ .footer { padding: 2rem 1.5rem; } }
 
           .footer-brand {
-            font-family: 'Bebas Neue', sans-serif;
-            color: #E8001C;
-            letter-spacing: 0.15em;
-            font-size: 1.1rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--red);
           }
 
-          .footer-links {
-            display: flex;
-            gap: 1.5rem;
-          }
-
+          .footer-links { display: flex; gap: 1.5rem; }
           .footer-links a {
+            font-family: 'Barlow', sans-serif;
             font-size: 0.65rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
@@ -423,97 +384,80 @@ export default function Home() {
             text-decoration: none;
             transition: color 0.2s;
           }
-
-          .footer-links a:hover { color: var(--cream); }
+          .footer-links a:hover { color: var(--white); }
         `}</style>
       </Head>
 
-      {/* Animated grain */}
-      <canvas ref={canvasRef} className="grain-canvas" />
-
+      <canvas ref={canvasRef} className="grain" />
       <Nav />
 
-      {/* ===== HERO ===== */}
+      {/* HERO */}
       <section className="hero">
-        {/* Ghost bg text */}
-        <div className="hero-bg-text" aria-hidden="true">WEAVE</div>
-
-        {/* Stamp */}
-        <div className="stamp" aria-hidden="true">
-          <p>Est.<br/>MMXXV<br/>Manila</p>
-        </div>
-
-        <div style={{ position: "relative", zIndex: 2 }}>
-          <div className="hero-rule" />
-
-          {/* Rotating discipline */}
-          <div className="discipline-wrap">
+        <div className="hero-left">
+          <p className="hero-eyebrow">Portfolio</p>
+          <div className="hero-type">
             <span
-              className="discipline-rotating"
+              className="line-discipline"
               style={{
                 opacity: fade ? 1 : 0,
-                transform: fade ? "translateY(0) skewX(0deg)" : "translateY(12px) skewX(-2deg)",
+                transform: fade ? "translateY(0)" : "translateY(10px)",
               }}
             >
               {discipline}
             </span>
-            <span className="discipline-by">by</span>
-            <span className="discipline-name">John Elsisura</span>
+            <span className="line-by">by</span>
+            <span className="line-name">John Elsisura</span>
           </div>
+        </div>
 
-          {/* Counter */}
-          <div style={{ marginBottom: "1rem" }}>
-            <span className="counter">
-              {String(disciplineIndex + 1).padStart(2, "0")} / {String(DISCIPLINES.length).padStart(2, "0")}
-            </span>
-          </div>
+        <div className="hero-right">
+          <ul className="disc-list">
+            {DISCIPLINES.map((d, i) => (
+              <li key={d} className={i === idx ? "active" : ""}>{d}</li>
+            ))}
+          </ul>
+        </div>
 
-          <div className="hero-meta">
-            <p className="hero-tagline">
-              <span>I'm a weaver.</span> The most fundamental thing in advertising,
-              marketing, and PR is a good stitch — a weave grounded in human truth.
-              Some of the greatest ideas came from the best weave behind the scenes.
-            </p>
-
-            <div className="hero-scroll">
-              <a href="#works">Explore the works</a>
-            </div>
-          </div>
+        <div className="hero-bottom">
+          <span className="hero-counter">
+            <span>{String(idx + 1).padStart(2, "0")}</span> / {String(DISCIPLINES.length).padStart(2, "0")}
+          </span>
+          <p className="hero-tagline">
+            <strong>I'm a weaver.</strong> The most fundamental thing in advertising,
+            marketing, and PR is a good stitch — a weave grounded in human truth.
+          </p>
+          <a href="#works" className="hero-cta">Explore the works</a>
         </div>
       </section>
 
-      {/* ===== DEMO REEL ===== */}
-      <section className="reel-section" style={{ position: "relative", zIndex: 2 }}>
-        <div className="reel-header">
-          <p className="section-label">Showreel</p>
-        </div>
-        <h2 className="reel-title">Demo <em>Reel</em></h2>
+      {/* REEL */}
+      <section className="reel">
+        <p className="section-label" style={{ marginBottom: "0.75rem" }}>Showreel</p>
+        <h2 className="section-title">Demo <em>Reel</em></h2>
         <div className="reel-frame" style={{ marginTop: "1.5rem" }}>
-          {/* PASTE YOUTUBE EMBED HERE */}
           {/* <iframe src="https://www.youtube.com/embed/YOUR_REEL_ID" style={{position:"absolute",inset:0,width:"100%",height:"100%"}} allowFullScreen /> */}
           <div className="reel-placeholder">
-            <div className="play-btn">
+            <div className="play-ring">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M5 3l14 9-14 9V3z" fill="rgba(232,0,28,0.9)" />
+                <path d="M5 3l14 9-14 9V3z" fill="#E8001C" />
               </svg>
             </div>
-            <p style={{ fontSize: "0.65rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--muted)", margin: 0 }}>
+            <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:"0.65rem", letterSpacing:"0.2em", textTransform:"uppercase", color:"#6e6b66" }}>
               Replace with YouTube embed
             </p>
           </div>
         </div>
       </section>
 
-      {/* ===== WORKS ===== */}
-      <section className="works-section" id="works">
-        <div className="works-header">
-          <p className="section-label">Selected work</p>
-          <h2 className="works-title">What I've Done<br /><em style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", color: "#E8001C" }}>(So Far)</em></h2>
+      {/* WORKS */}
+      <section className="works" id="works">
+        <div className="works-head">
+          <p className="section-label" style={{ marginBottom: "0.5rem" }}>Selected work</p>
+          <h2 className="section-title">What I've Done<br /><em>(So Far)</em></h2>
         </div>
 
-        {/* Filters */}
         <div className="filters">
-          {filterTags.map((tag) => (
+          {filterTags.map(tag => (
             <button
               key={tag.value}
               onClick={() => setActiveFilter(tag.value)}
@@ -524,20 +468,17 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Grid */}
         <div className="works-grid">
-          {filtered.map((work) => (
-            <WorkCard key={work.id} work={work} />
-          ))}
+          {filtered.map(work => <WorkCard key={work.id} work={work} />)}
           {filtered.length === 0 && (
-            <p style={{ color: "var(--muted)", fontSize: "0.85rem", gridColumn: "1/-1", textAlign: "center", padding: "3rem 0" }}>
+            <p style={{ color:"#6e6b66", fontSize:"0.85rem", gridColumn:"1/-1", textAlign:"center", padding:"3rem 0" }}>
               No works under this category yet.
             </p>
           )}
         </div>
       </section>
 
-      {/* ===== FOOTER ===== */}
+      {/* FOOTER */}
       <footer className="footer">
         <span className="footer-brand">byjohnelsisura.website</span>
         <div className="footer-links">
