@@ -12,40 +12,85 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const isHome = router.pathname === "/";
-
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 px-8 md:px-12 py-6 flex justify-between items-center transition-all duration-500 ${
-        scrolled ? "border-b border-white/5 backdrop-blur-md bg-ink/70" : ""
-      }`}
+      style={{
+        position: "fixed",
+        top: 0, left: 0, right: 0,
+        zIndex: 50,
+        padding: "0 3rem",
+        height: "56px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        transition: "background 0.4s, border-color 0.4s",
+        background: scrolled ? "rgba(22,20,18,0.78)" : "transparent",
+        backdropFilter: scrolled ? "blur(16px) saturate(160%)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(16px) saturate(160%)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(58,56,53,0.5)" : "1px solid transparent",
+      }}
     >
-      <Link href="/" className="font-bebas text-accent tracking-widest text-lg">
+      {/* Logo */}
+      <Link href="/" style={{
+        fontFamily: "'Barlow Condensed', sans-serif",
+        fontWeight: 900,
+        fontSize: "1.05rem",
+        letterSpacing: "0.16em",
+        textTransform: "uppercase",
+        color: "#E8001C",
+        textDecoration: "none",
+      }}>
         JE
       </Link>
-      <div className="flex gap-8">
-        <Link
-          href="/#works"
-          className="text-xs tracking-widest uppercase text-white/50 hover:text-white transition-colors"
-        >
-          Works
-        </Link>
-        <Link
-          href="/about"
-          className={`text-xs tracking-widest uppercase transition-colors ${
-            router.pathname === "/about"
-              ? "text-accent"
-              : "text-white/50 hover:text-white"
-          }`}
-        >
-          About
-        </Link>
-        <a
-          href="mailto:your@email.com"
-          className="text-xs tracking-widest uppercase text-white/50 hover:text-white transition-colors"
-        >
-          Contact
-        </a>
+
+      {/* Links */}
+      <div style={{ display: "flex", gap: "2.5rem", alignItems: "center" }}>
+        {[
+          { label: "Works", href: "/#works" },
+          { label: "About", href: "/about" },
+          { label: "Contact", href: "mailto:your@email.com", external: true },
+        ].map(({ label, href, external }) => {
+          const isActive = !external && router.pathname === href;
+          return external ? (
+            <a
+              key={label}
+              href={href}
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.72rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#6e6b66",
+                textDecoration: "none",
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={e => e.target.style.color = "#F0EDE8"}
+              onMouseLeave={e => e.target.style.color = "#6e6b66"}
+            >
+              {label}
+            </a>
+          ) : (
+            <Link
+              key={label}
+              href={href}
+              style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.72rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: isActive ? "#E8001C" : "#6e6b66",
+                textDecoration: "none",
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={e => { if (!isActive) e.target.style.color = "#F0EDE8"; }}
+              onMouseLeave={e => { if (!isActive) e.target.style.color = "#6e6b66"; }}
+            >
+              {label}
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );
