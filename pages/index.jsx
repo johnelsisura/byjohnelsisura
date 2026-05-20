@@ -82,7 +82,7 @@ export default function Home() {
         <style>{`
           :root {
             --ink: #0a0907;
-            --accent: #c9a84c;
+            --accent: #E8001C;
             --muted: #6b6560;
             --cream: #ede8df;
           }
@@ -123,7 +123,7 @@ export default function Home() {
             font-size: clamp(18rem, 35vw, 32rem);
             line-height: 0.85;
             color: transparent;
-            -webkit-text-stroke: 1px rgba(201,168,76,0.07);
+            -webkit-text-stroke: 1px rgba(232,0,28,0.06);
             pointer-events: none;
             user-select: none;
             white-space: nowrap;
@@ -133,7 +133,7 @@ export default function Home() {
           .hero-rule {
             width: 100%;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4) 30%, rgba(201,168,76,0.15) 70%, transparent);
+            background: linear-gradient(90deg, transparent, rgba(232,0,28,0.5) 30%, rgba(232,0,28,0.1) 70%, transparent);
             margin-bottom: 2.5rem;
           }
 
@@ -149,7 +149,7 @@ export default function Home() {
           .discipline-rotating {
             font-family: 'Bebas Neue', sans-serif;
             font-size: clamp(5rem, 14vw, 13rem);
-            color: var(--accent);
+            color: #E8001C;
             transition: opacity 0.4s, transform 0.4s;
             display: block;
             letter-spacing: -0.01em;
@@ -185,7 +185,7 @@ export default function Home() {
             line-height: 1.75;
             color: var(--muted);
             letter-spacing: 0.02em;
-            border-left: 1px solid rgba(201,168,76,0.3);
+            border-left: 1px solid rgba(232,0,28,0.35);
             padding-left: 1.25rem;
           }
 
@@ -212,12 +212,12 @@ export default function Home() {
             writing-mode: vertical-rl;
           }
 
-          .hero-scroll a:hover { color: var(--accent); }
+          .hero-scroll a:hover { color: #E8001C; }
 
           .counter {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 0.65rem;
-            color: rgba(201,168,76,0.4);
+            color: rgba(232,0,28,0.5);
             letter-spacing: 0.15em;
           }
 
@@ -228,7 +228,7 @@ export default function Home() {
             right: 3rem;
             width: 100px;
             height: 100px;
-            border: 1.5px solid rgba(201,168,76,0.25);
+            border: 1.5px solid rgba(232,0,28,0.3);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -243,7 +243,7 @@ export default function Home() {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 0.55rem;
             letter-spacing: 0.2em;
-            color: rgba(201,168,76,0.4);
+            color: rgba(232,0,28,0.5);
             text-transform: uppercase;
             line-height: 1.6;
           }
@@ -253,7 +253,7 @@ export default function Home() {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 0.65rem;
             letter-spacing: 0.25em;
-            color: var(--accent);
+            color: #E8001C;
             text-transform: uppercase;
           }
 
@@ -283,7 +283,7 @@ export default function Home() {
           .reel-title em {
             font-family: 'Playfair Display', serif;
             font-style: italic;
-            color: var(--accent);
+            color: #E8001C;
           }
 
           .reel-frame {
@@ -307,7 +307,7 @@ export default function Home() {
           .play-btn {
             width: 64px;
             height: 64px;
-            border: 1px solid rgba(201,168,76,0.4);
+            border: 1px solid rgba(232,0,28,0.5);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -317,8 +317,8 @@ export default function Home() {
           }
 
           .play-btn:hover {
-            border-color: var(--accent);
-            background: rgba(201,168,76,0.08);
+            border-color: #E8001C;
+            background: rgba(232,0,28,0.08);
           }
 
           /* Works section */
@@ -371,8 +371,8 @@ export default function Home() {
           }
 
           .filter-btn.active {
-            border-color: var(--accent);
-            color: var(--accent);
+            border-color: #E8001C;
+            color: #E8001C;
           }
 
           /* Grid */
@@ -405,7 +405,7 @@ export default function Home() {
 
           .footer-brand {
             font-family: 'Bebas Neue', sans-serif;
-            color: var(--accent);
+            color: #E8001C;
             letter-spacing: 0.15em;
             font-size: 1.1rem;
           }
@@ -494,7 +494,7 @@ export default function Home() {
           <div className="reel-placeholder">
             <div className="play-btn">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M5 3l14 9-14 9V3z" fill="rgba(201,168,76,0.8)" />
+                <path d="M5 3l14 9-14 9V3z" fill="rgba(232,0,28,0.9)" />
               </svg>
             </div>
             <p style={{ fontSize: "0.65rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--muted)", margin: 0 }}>
@@ -508,7 +508,7 @@ export default function Home() {
       <section className="works-section" id="works">
         <div className="works-header">
           <p className="section-label">Selected work</p>
-          <h2 className="works-title">What I've Done<br /><em style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", color: "var(--accent)" }}>(So Far)</em></h2>
+          <h2 className="works-title">What I've Done<br /><em style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", color: "#E8001C" }}>(So Far)</em></h2>
         </div>
 
         {/* Filters */}
